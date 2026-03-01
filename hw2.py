@@ -66,8 +66,8 @@ class SarcasmDataset(Dataset):
         label_tensor = torch.tensor([int(label)], dtype=torch.long)  # (1,)
 
         return {
-            "input_ids": input_ids,
-            "attention_mask": attention_mask,
+            "input ids": input_ids,
+            "attention mask": attention_mask,
             "label": label_tensor
         }
 
@@ -121,11 +121,11 @@ def train_loop(
     loss_history = []
     
     for epoch in range(epochs):
-        epoch_loss = 0
+        epoch_loss = 0.0
         for batch in tqdm(dataloader, desc=f"Epoch {epoch+1}/{epochs}"):
             # TODO: Move batch components to device
-            input_ids = batch["input_ids"].to(device)
-            attention_mask = batch["attention_mask"].to(device)
+            input_ids = batch["input ids"].to(device)
+            attention_mask = batch["attention mask"].to(device)
             labels = batch["label"].to(device).squeeze(1)
 
             # TODO: Forward pass, Loss calculation, Backward pass, Optimizer step
