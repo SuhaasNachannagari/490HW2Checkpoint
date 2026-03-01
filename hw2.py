@@ -48,7 +48,12 @@ class SarcasmDataset(Dataset):
         #         return a flattened tensor for input_ids and attention_mask.
         
         example = self.data[index]
-        text = example["headline"]
+        text = example.get("headline", "")
+        if text is None:
+            text = ""
+        if not isinstance(text, str):
+            text = str(text)
+
         label = example["is_sarcastic"]
 
         encoded = self.tokenizer.encode_plus(
@@ -61,13 +66,13 @@ class SarcasmDataset(Dataset):
             return_tensors="pt"
         )
 
-        input_ids = encoded["input_ids"].squeeze(0)           # (max_length,)
-        attention_mask = encoded["attention_mask"].squeeze(0) # (max_length,)
-        label_tensor = torch.tensor([int(label)], dtype=torch.long)  # (1,)
+        input_ids = encoded["input_ids"].squeeze(0).to(torch.long)           # (max_length,)
+        attention_mask = encoded["attention_mask"].squeeze(0).to(torch.long) # (max_length,)
+        label_tensor = torch.tensor([int(label)], dtype=torch.long)          # (1,)
 
         return {
-            "input ids": input_ids,
-            "attention mask": attention_mask,
+            "input_ids": input_ids,
+            "attention_mask": attention_mask,
             "label": label_tensor
         }
 
@@ -124,8 +129,8 @@ def train_loop(
         epoch_loss = 0.0
         for batch in tqdm(dataloader, desc=f"Epoch {epoch+1}/{epochs}"):
             # TODO: Move batch components to device
-            input_ids = batch["input ids"].to(device)
-            attention_mask = batch["attention mask"].to(device)
+            input_ids = batch["input_ids"].to(device)
+            attention_mask = batch["attention_mask"].to(device)
             labels = batch["label"].to(device).squeeze(1)
 
             # TODO: Forward pass, Loss calculation, Backward pass, Optimizer step
