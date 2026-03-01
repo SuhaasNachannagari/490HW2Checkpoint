@@ -68,7 +68,7 @@ class SarcasmDataset(Dataset):
 
         input_ids = encoded["input_ids"].squeeze(0).to(torch.long)           # (max_length,)
         attention_mask = encoded["attention_mask"].squeeze(0).to(torch.long) # (max_length,)
-        label_tensor = torch.tensor([int(label)], dtype=torch.long)          # (1,)
+        label_tensor = torch.tensor(int(label), dtype=torch.long)            # ()
 
         return {
             "input_ids": input_ids,
@@ -131,7 +131,7 @@ def train_loop(
             # TODO: Move batch components to device
             input_ids = batch["input_ids"].to(device)
             attention_mask = batch["attention_mask"].to(device)
-            labels = batch["label"].to(device).squeeze(1)
+            labels = batch["label"].to(device).view(-1)
 
             # TODO: Forward pass, Loss calculation, Backward pass, Optimizer step
             optimizer.zero_grad(set_to_none=True)
